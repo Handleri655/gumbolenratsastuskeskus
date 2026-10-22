@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import NewsCard from '../components/NewsCard.astro';
+import PageHero from '../components/PageHero.astro';
+import type { Dict } from '../i18n';
+import { formatDate, pathFor, type Lang } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+}
+
+const { lang, dict } = Astro.props;
+const posts = (await getCollection('news', ({ data }) => data.lang === lang)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+
+<PageHero eyebrow={dict.news.eyebrow} title={dict.news.title} lede={dict.news.lede} />
+<div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+  {
+    posts.length === 0 ? (
+      <p class="text-muted">{dict.news.empty}</p>
+    ) : (
+      <div class="grid gap-5 md:grid-cols-2">
+        {posts.map((post) => (
+          <NewsCard
+            href={pathFor(lang, 'ajankohtaista', post.data.slug)}
+            title={post.data.title}
+            description={post.data.description}
+            date={formatDate(post.data.date, lang)}
+            tags={post.data.tags.map((tag) => dict.tags[tag])}
+            readMore={dict.actions.readMore}
+          />
+        ))}
+      </div>
+    )
+  }
+</div>

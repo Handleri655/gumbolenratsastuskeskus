@@ -1,0 +1,20 @@
+---
+interface Props {
+  label: string;
+  title: string;
+  href: string;
+  readMore: string;
+}
+
+const { label, title, href, readMore } = Astro.props;
+---
+
+<div class="bg-forest-900 text-cream-50">
+  <div class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+    <p>
+      <span class="mr-2 text-xs font-semibold uppercase tracking-[0.16em] text-ochre-400">{label}</span>
+      {title}
+    </p>
+    <a class="font-semibold underline decoration-ochre-400 underline-offset-4" href={href}>{readMore}</a>
+  </div>
+</div>

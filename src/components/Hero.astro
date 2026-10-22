@@ -1,0 +1,50 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Eyebrow from './Eyebrow.astro';
+
+interface Props {
+  image: ImageMetadata;
+  alt: string;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  primaryHref: string;
+  primaryLabel: string;
+  secondaryHref: string;
+  secondaryLabel: string;
+}
+
+const { image, alt, eyebrow, title, subtitle, primaryHref, primaryLabel, secondaryHref, secondaryLabel } = Astro.props;
+---
+
+<section class="relative isolate min-h-[calc(100svh-4.75rem)] overflow-hidden bg-forest-950 text-cream-50">
+  <Image
+    src={image}
+    alt={alt}
+    widths={[800, 1400, 2000]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    class="absolute inset-0 h-full w-full object-cover object-[center_78%]"
+  />
+  <div class="absolute inset-0 bg-gradient-to-r from-forest-950/75 via-forest-950/28 to-forest-950/10"></div>
+  <div class="relative mx-auto flex min-h-[calc(100svh-4.75rem)] max-w-6xl items-end px-5 py-16 md:items-center md:py-24">
+    <div class="max-w-2xl">
+      <Eyebrow text={eyebrow} light />
+      <h1 class="mt-5 font-serif text-5xl leading-[0.95] text-cream-50 sm:text-7xl">{title}</h1>
+      <p class="mt-5 max-w-xl text-lg leading-relaxed text-cream-100">{subtitle}</p>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <a href={primaryHref} class="inline-flex justify-center bg-cream-50 px-6 py-3 text-sm font-semibold text-forest-900 hover:bg-cream-200">
+          {primaryLabel}
+        </a>
+        <a
+          href={secondaryHref}
+          class="inline-flex justify-center border border-cream-50 px-6 py-3 text-sm font-semibold text-cream-50 hover:bg-cream-50 hover:text-forest-900"
+        >
+          {secondaryLabel}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

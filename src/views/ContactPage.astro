@@ -1,0 +1,110 @@
+---
+import { site } from '../config/site';
+import Map from '../components/Map.astro';
+import PageHero from '../components/PageHero.astro';
+import type { Dict } from '../i18n';
+
+interface Props {
+  dict: Dict;
+}
+
+const { dict } = Astro.props;
+const page = dict.contact;
+const hsl = 'https://reittiopas.hsl.fi/';
+---
+
+<PageHero eyebrow={page.eyebrow} title={page.title} lede={page.lede} />
+
+<div class="mx-auto grid max-w-6xl gap-12 px-5 py-16 md:grid-cols-2 md:py-24">
+  <div class="space-y-8">
+    <section>
+      <h2 class="font-serif text-3xl text-forest-900">{page.visit}</h2>
+      <address class="mt-3 text-lg not-italic">
+        {site.legalName}<br />
+        {site.address.street}<br />
+        {site.address.postalCode} {site.address.city}
+      </address>
+    </section>
+    <section>
+      <h2 class="font-serif text-3xl text-forest-900">{page.manager}</h2>
+      <p class="mt-3">{site.manager}</p>
+      <p class="mt-1">
+        <a class="font-semibold underline decoration-ochre-400 underline-offset-4" href={`tel:${site.phones.manager.tel}`}>{site.phones.manager.display}</a>
+      </p>
+      <p class="mt-1">
+        <a class="underline decoration-ochre-400 underline-offset-4" href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+    </section>
+    <section>
+      <h2 class="font-serif text-3xl text-forest-900">{page.staff}</h2>
+      <p class="mt-3">
+        <a class="font-semibold underline decoration-ochre-400 underline-offset-4" href={`tel:${site.phones.staff.tel}`}>{site.phones.staff.display}</a>
+      </p>
+      <p class="text-muted">{page.staffHours}</p>
+    </section>
+    <section>
+      <h2 class="font-serif text-3xl text-forest-900">{page.ids}</h2>
+      <dl class="mt-3 space-y-1">
+        <div>
+          <dt class="inline">{page.businessId}: </dt>
+          <dd class="inline">{site.businessId}</dd>
+        </div>
+        <div>
+          <dt class="inline">{page.holdingId}: </dt>
+          <dd class="inline">{site.holdingPlaceId}</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+  <Map dict={dict} />
+</div>
+
+<section id={page.locationId} class="border-t border-forest-900/10">
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    <h2 class="font-serif text-4xl text-forest-900">{page.locationTitle}</h2>
+    <div class="mt-5 max-w-3xl space-y-4 leading-relaxed text-muted">
+      {page.location.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <p class="mt-6">
+      <a class="font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4" href={hsl}>{page.hsl}</a>
+    </p>
+  </div>
+</section>
+
+<section id={page.billingId} class="border-t border-forest-900/10 bg-cream-200/40">
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    <h2 class="font-serif text-4xl text-forest-900">{page.billingTitle}</h2>
+    <p class="mt-4 text-muted">{page.billingIntro}</p>
+    <dl class="mt-8 grid gap-6 md:grid-cols-2">
+      <div>
+        <dt class="text-sm font-semibold uppercase tracking-wide text-muted">{page.eInvoice}</dt>
+        <dd class="mt-2">
+          {page.ovt}: {site.invoicing.ovt}<br />
+          {page.operators}: {site.invoicing.operatorIds.join(' / ')}
+        </dd>
+        <dd class="mt-2 text-sm text-muted">{page.operatorsNote}</dd>
+      </div>
+      <div>
+        <dt class="text-sm font-semibold uppercase tracking-wide text-muted">{page.pdfEmail}</dt>
+        <dd class="mt-2">
+          <a class="underline decoration-ochre-400 underline-offset-4" href={`mailto:${site.invoicing.email}`}>{site.invoicing.email}</a>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-sm font-semibold uppercase tracking-wide text-muted">{page.paper}</dt>
+        <dd class="mt-2">
+          {site.legalName} {site.businessId.replace('-', '')}<br />
+          {site.invoicing.postal}<br />
+          {site.invoicing.postalCode} {site.invoicing.operator}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-sm font-semibold uppercase tracking-wide text-muted">{page.rentAccount}</dt>
+        <dd class="mt-2">
+          {site.invoicing.iban}<br />
+          {dict.rental.reference} {site.invoicing.reference}
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>

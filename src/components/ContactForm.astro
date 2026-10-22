@@ -1,0 +1,140 @@
+---
+import type { Dict } from '../i18n';
+import type { Lang } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+  variant: 'stall' | 'rental';
+  action: string;
+}
+
+const { lang, dict, variant, action } = Astro.props;
+const f = dict.forms;
+const formName = variant === 'stall' ? 'tallipaikka' : 'vuokraus';
+const field = 'mt-1 w-full border border-forest-900/20 bg-cream-50 px-3 py-3 text-ink';
+const label = 'block text-sm font-semibold text-forest-900';
+---
+
+<form
+  name={formName}
+  method="POST"
+  action={action}
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  class="space-y-5"
+>
+  <input type="hidden" name="form-name" value={formName} />
+  <input type="hidden" name="kieli" value={lang} />
+  <p class="text-sm text-muted">{variant === 'stall' ? f.stallIntro : f.rentalIntro}</p>
+
+  <div class="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+    <label>
+      {f.honeypot}
+      <input name="bot-field" tabindex="-1" autocomplete="off" />
+    </label>
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <label class={label}>
+      {f.name} *
+      <input class={field} type="text" name="nimi" autocomplete="name" required />
+    </label>
+    <label class={label}>
+      {f.email} *
+      <input class={field} type="email" name="sahkoposti" autocomplete="email" required />
+    </label>
+    <label class={label}>
+      {f.phone}
+      <input class={field} type="tel" name="puhelin" autocomplete="tel" />
+    </label>
+
+    {
+      variant === 'stall' && (
+        <>
+          <label class={label}>
+            {f.horseName} *
+            <input class={field} type="text" name="hevosen-nimi" required />
+          </label>
+          <label class={label}>
+            {f.horseAge}
+            <input class={field} type="text" name="ika" inputmode="numeric" />
+          </label>
+          <label class={label}>
+            {f.horseBreed}
+            <input class={field} type="text" name="rotu" />
+          </label>
+          <label class={label}>
+            {f.horseSex}
+            <select class={field} name="sukupuoli">
+              {f.sexOptions.map((option) => (
+                <option value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </label>
+          <label class={label}>
+            {f.discipline}
+            <select class={field} name="kayttotarkoitus">
+              {f.disciplineOptions.map((option) => (
+                <option value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </label>
+          <label class={label}>
+            {f.start}
+            <input class={field} type="text" name="aloitus" />
+          </label>
+          <label class={label}>
+            {f.turnout}
+            <select class={field} name="tarhaus">
+              {f.turnoutOptions.map((option) => (
+                <option value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </label>
+        </>
+      )
+    }
+
+    {
+      variant === 'rental' && (
+        <>
+          <label class={label}>
+            {f.rentalType} *
+            <select class={field} name="kaytto" required>
+              {f.rentalOptions.map((option) => (
+                <option value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </label>
+          <label class={label}>
+            {f.date} *
+            <input class={field} type="date" name="paiva" required />
+          </label>
+          <label class={label}>
+            {f.time}
+            <input class={field} type="time" name="kellonaika" />
+          </label>
+          <label class={label}>
+            {f.count}
+            <input class={field} type="number" name="maara" min="1" max="40" />
+          </label>
+        </>
+      )
+    }
+  </div>
+
+  <label class={label}>
+    {f.message}
+    <textarea class={`${field} min-h-36`} name="viesti"></textarea>
+  </label>
+
+  <label class="flex items-start gap-3 text-sm leading-relaxed text-ink">
+    <input class="mt-1" type="checkbox" name="tietosuoja" value="kylla" required />
+    <span>{f.gdpr} *</span>
+  </label>
+
+  <button type="submit" class="bg-forest-900 px-6 py-3 text-sm font-semibold text-cream-50 hover:bg-forest-800">
+    {dict.actions.send}
+  </button>
+</form>

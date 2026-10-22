@@ -1,0 +1,65 @@
+---
+import { site } from '../config/site';
+import ContactForm from '../components/ContactForm.astro';
+import PageHero from '../components/PageHero.astro';
+import PriceCard from '../components/PriceCard.astro';
+import type { Dict } from '../i18n';
+import { formatEuro, pathFor, type Lang } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+}
+
+const { lang, dict } = Astro.props;
+const page = dict.rental;
+---
+
+<PageHero eyebrow={page.eyebrow} title={page.title} lede={page.lede} />
+
+<div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+  <h2 class="font-serif text-4xl text-forest-900">{page.ridersTitle}</h2>
+  <div class="mt-5 max-w-3xl space-y-4 leading-relaxed text-muted">
+    {page.riders.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+  <div class="mt-8 grid gap-4 md:grid-cols-2">
+    <PriceCard title={page.seasonTitle} price={formatEuro(site.prices.season, lang)} unit={page.seasonUnit} />
+    <PriceCard title={page.singleTitle} price={formatEuro(site.prices.single, lang)} unit={page.singleUnit} />
+  </div>
+  <p class="mt-6">
+    <a class="text-sm font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4" href={site.pdfArena}>
+      {dict.actions.downloadPdf}
+    </a>
+  </p>
+
+  <h2 class="mt-16 font-serif text-4xl text-forest-900">{page.dogsTitle}</h2>
+  <p class="mt-5 max-w-3xl leading-relaxed text-muted">{page.dogs}</p>
+  <div class="mt-8 grid gap-4 md:grid-cols-2">
+    <PriceCard title={page.dogFirstTitle} price={formatEuro(site.prices.dogFirst, lang)} unit={page.dogUnit} />
+    <PriceCard title={page.dogExtraTitle} price={formatEuro(site.prices.dogExtra, lang)} unit={page.dogUnit} />
+  </div>
+
+  <h2 class="mt-16 font-serif text-4xl text-forest-900">{page.payTitle}</h2>
+  <p class="mt-5 max-w-3xl leading-relaxed text-muted">{page.payText}</p>
+  <dl class="mt-6 max-w-xl space-y-2 text-forest-900">
+    <div class="flex justify-between gap-4 border-b border-forest-900/10 py-2">
+      <dt>{page.account}</dt>
+      <dd class="font-semibold">{site.invoicing.iban}</dd>
+    </div>
+    <div class="flex justify-between gap-4 border-b border-forest-900/10 py-2">
+      <dt>{page.reference}</dt>
+      <dd class="font-semibold">{site.invoicing.reference}</dd>
+    </div>
+  </dl>
+  <p class="mt-6 text-muted">{page.other}</p>
+
+  <div class="mt-16 grid gap-10 border-t border-forest-900/10 pt-12 lg:grid-cols-[0.8fr_1.2fr]">
+    <div>
+      <h2 class="font-serif text-4xl text-forest-900">{dict.actions.askRental}</h2>
+      <p class="mt-4 leading-relaxed text-muted">
+        <a class="font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4" href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+    </div>
+    <ContactForm lang={lang} dict={dict} variant="rental" action={pathFor(lang, 'kiitos')} />
+  </div>
+</div>

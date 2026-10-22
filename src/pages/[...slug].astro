@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import { languages, pages, pathFor } from '../lib/routes';
+import Render from '../views/Render.astro';
+
+export async function getStaticPaths() {
+  const news = await getCollection('news');
+  const paths = [];
+
+  for (const lang of languages) {
+    for (const page of pages) {
+      if (lang === 'fi' && page === 'home') continue;
+      paths.push({
+        params: { slug: pathFor(lang, page).replace(/^\//, '') },
+        props: { kind: 'page' as const, lang, page },
+      });
+    }
+
+    for (const entry of news.filter((item) => item.data.lang === lang)) {
+      paths.push({
+        params: { slug: pathFor(lang, 'ajankohtaista', entry.data.slug).replace(/^\//, '') },
+        props: { kind: 'news' as const, lang, id: entry.id },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const props = Astro.props;
+---
+
+<Render {...props} />

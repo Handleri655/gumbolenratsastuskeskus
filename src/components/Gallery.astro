@@ -1,0 +1,112 @@
+---
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Item {
+  src: ImageMetadata;
+  alt: string;
+}
+
+interface Props {
+  items: Item[];
+  label: string;
+  closeLabel: string;
+  prevLabel: string;
+  nextLabel: string;
+}
+
+const { items, label, closeLabel, prevLabel, nextLabel } = Astro.props;
+const prepared = await Promise.all(
+  items.map(async (item) => {
+    const full = await getImage({ src: item.src, width: 1800 });
+    return { ...item, full: full.src };
+  }),
+);
+---
+
+<section data-gallery aria-label={label}>
+  <ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
+    {
+      prepared.map((item, index) => (
+        <li class:list={[index === 0 && 'col-span-2 row-span-2']}>
+          <button
+            type="button"
+            class="block h-full w-full cursor-zoom-in overflow-hidden bg-forest-900"
+            data-full={item.full}
+            data-alt={item.alt}
+            aria-label={item.alt}
+          >
+            <Image
+              src={item.src}
+              alt={item.alt}
+              widths={[480, 800, 1200]}
+              sizes={index === 0 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 768px) 25vw, 50vw'}
+              class="h-full min-h-40 w-full object-cover md:min-h-48"
+            />
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+
+  <dialog class="m-auto w-[min(100vw-2rem,72rem)] bg-transparent p-0 text-cream-50 backdrop:bg-forest-950/85">
+    <div class="flex items-center justify-between gap-3 pb-3">
+      <p data-caption class="text-sm"></p>
+      <button type="button" data-close class="border border-cream-50/40 px-3 py-2 text-sm">{closeLabel}</button>
+    </div>
+    <div class="relative">
+      <img data-photo alt="" class="max-h-[75vh] w-full bg-forest-950 object-contain" />
+      <div class="mt-3 flex justify-between">
+        <button type="button" data-prev class="border border-cream-50/40 px-3 py-2 text-sm">{prevLabel}</button>
+        <button type="button" data-next class="border border-cream-50/40 px-3 py-2 text-sm">{nextLabel}</button>
+      </div>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  const roots = document.querySelectorAll('[data-gallery]');
+
+  roots.forEach((root) => {
+    if (!(root instanceof HTMLElement) || root.dataset.ready === 'true') return;
+    root.dataset.ready = 'true';
+
+    const dialog = root.querySelector('dialog');
+    const photo = root.querySelector('[data-photo]');
+    const caption = root.querySelector('[data-caption]');
+    const buttons = [...root.querySelectorAll('ul button')];
+    if (!(dialog instanceof HTMLDialogElement) || !(photo instanceof HTMLImageElement)) return;
+
+    let index = 0;
+
+    function show(next: number) {
+      if (buttons.length === 0) return;
+      index = (next + buttons.length) % buttons.length;
+      const button = buttons[index];
+      if (!(button instanceof HTMLButtonElement)) return;
+      photo.src = button.dataset.full ?? '';
+      photo.alt = button.dataset.alt ?? '';
+      if (caption) caption.textContent = button.dataset.alt ?? '';
+    }
+
+    buttons.forEach((button, buttonIndex) => {
+      button.addEventListener('click', () => {
+        show(buttonIndex);
+        dialog.showModal();
+      });
+    });
+
+    root.querySelector('[data-close]')?.addEventListener('click', () => dialog.close());
+    root.querySelector('[data-prev]')?.addEventListener('click', () => show(index - 1));
+    root.querySelector('[data-next]')?.addEventListener('click', () => show(index + 1));
+
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') show(index + 1);
+      if (event.key === 'ArrowLeft') show(index - 1);
+    });
+  });
+</script>

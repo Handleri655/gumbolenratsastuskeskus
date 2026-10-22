@@ -1,0 +1,19 @@
+---
+import PageHero from '../components/PageHero.astro';
+import type { Dict } from '../i18n';
+import { pathFor, type Lang } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+}
+
+const { lang, dict } = Astro.props;
+---
+
+<PageHero eyebrow={dict.thanks.eyebrow} title={dict.thanks.title} lede={dict.thanks.text} />
+<div class="mx-auto max-w-3xl px-5 py-12">
+  <a href={pathFor(lang, 'home')} class="inline-flex bg-forest-900 px-5 py-3 text-sm font-semibold text-cream-50 hover:bg-forest-800">
+    {dict.actions.home}
+  </a>
+</div>

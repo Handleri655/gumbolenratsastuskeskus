@@ -1,0 +1,28 @@
+---
+import PageHero from '../components/PageHero.astro';
+import type { Dict } from '../i18n';
+import { pathFor, type Lang } from '../lib/routes';
+import { site } from '../config/site';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+}
+
+const { lang, dict } = Astro.props;
+const page = dict.training;
+---
+
+<PageHero eyebrow={page.eyebrow} title={page.title} lede={page.lede} />
+<div class="mx-auto max-w-3xl px-5 py-16 md:py-24">
+  <div class="space-y-4 text-lg leading-relaxed text-muted">
+    {page.body.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+  <p class="mt-8 font-serif text-3xl leading-snug text-forest-900">{page.cta}</p>
+  <p class="mt-6">
+    <a class="font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4" href={`mailto:${site.email}`}>{site.email}</a>
+  </p>
+  <a href={pathFor(lang, 'yhteystiedot')} class="mt-8 inline-flex border border-forest-900 px-5 py-3 text-sm font-semibold text-forest-900 hover:bg-forest-900 hover:text-cream-50">
+    {dict.nav.contact}
+  </a>
+</div>

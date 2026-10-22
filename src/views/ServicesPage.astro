@@ -1,0 +1,50 @@
+---
+import PageHero from '../components/PageHero.astro';
+import type { Dict } from '../i18n';
+import { pathFor, type Lang } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+}
+
+const { lang, dict } = Astro.props;
+const page = dict.services;
+---
+
+<PageHero eyebrow={page.eyebrow} title={page.title} lede={page.lede} />
+
+<div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+  <p class="max-w-2xl font-serif text-3xl text-forest-900">{page.priceNote}</p>
+  <a href={pathFor(lang, 'tallipaikka')} class="mt-6 inline-flex bg-forest-900 px-5 py-3 text-sm font-semibold text-cream-50 hover:bg-forest-800">
+    {dict.actions.askStall}
+  </a>
+
+  <h2 class="mt-16 font-serif text-4xl text-forest-900">{page.includesTitle}</h2>
+  <ul class="mt-8 grid gap-3 sm:grid-cols-2">
+    {
+      page.includes.map((item) => (
+        <li class="flex gap-3 border border-forest-900/10 bg-cream-50 px-4 py-4 leading-relaxed">
+          <span class="mt-2 h-2 w-2 shrink-0 bg-ochre-400" aria-hidden="true" />
+          {item}
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2 class="mt-16 font-serif text-4xl text-forest-900">{page.faqTitle}</h2>
+  <p class="mt-3 max-w-2xl text-sm text-muted">{page.faqNote}</p>
+  <div class="mt-6 divide-y divide-forest-900/10 border-y border-forest-900/10">
+    {
+      page.faq.map((item) => (
+        <details class="group py-4">
+          <summary class="cursor-pointer list-none font-semibold text-forest-900 [&::-webkit-details-marker]:hidden">
+            <span class="mr-3 text-ochre-700" aria-hidden="true">+</span>
+            {item.q}
+          </summary>
+          <p class="mt-3 max-w-3xl leading-relaxed text-muted">{item.a}</p>
+        </details>
+      ))
+    }
+  </div>
+</div>

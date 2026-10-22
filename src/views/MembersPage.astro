@@ -1,0 +1,244 @@
+---
+import PageHero from '../components/PageHero.astro';
+import PriceCard from '../components/PriceCard.astro';
+import { site } from '../config/site';
+import type { Dict } from '../i18n';
+import { localeOf, pathFor, type Lang } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+}
+
+const { lang, dict } = Astro.props;
+const page = dict.members;
+const club = site.club;
+
+function euro(amount: number) {
+  const digits = Number.isInteger(amount) ? 0 : 2;
+  return new Intl.NumberFormat(localeOf(lang), {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(amount);
+}
+
+function measure(amount: number) {
+  return new Intl.NumberFormat(localeOf(lang), { maximumFractionDigits: 1 }).format(amount);
+}
+
+const shelterSize = `${measure(club.shelter.width)} × ${measure(club.shelter.length)}`;
+const mailto = `mailto:${club.email}?subject=${encodeURIComponent('jäsenasiat')}`;
+const textLink = 'font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4';
+const button = 'inline-flex border border-forest-900 px-5 py-3 text-sm font-semibold text-forest-900 hover:bg-forest-900 hover:text-cream-50';
+---
+
+<PageHero eyebrow={page.eyebrow} title={page.title} lede={page.lede} />
+
+<div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+  <div class="max-w-3xl space-y-4 text-lg leading-relaxed text-muted">
+    {page.intro.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+
+  <nav class="mt-8" aria-label={page.title}>
+    <ul class="flex flex-wrap gap-2">
+      {
+        page.jump.map((item) => (
+          <li>
+            <a class="inline-flex border border-forest-900/15 bg-cream-50 px-3 py-2 text-sm font-semibold text-forest-900 hover:border-forest-900" href={`#${item.id}`}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <div class="mt-12 grid gap-5 md:grid-cols-2">
+    <article class="border border-forest-900/15 bg-cream-50 p-6">
+      <h2 class="font-serif text-3xl text-forest-900">{page.stableTitle}</h2>
+      <p class="mt-3 leading-relaxed text-muted">{page.stableText}</p>
+      <p class="mt-5 font-semibold text-forest-900">{site.manager}</p>
+      <p class="mt-1">
+        <a class={textLink} href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+      <a href={pathFor(lang, 'yhteystiedot')} class:list={['mt-6', button]}>{dict.nav.contact}</a>
+    </article>
+    <article class="border border-forest-900/15 bg-cream-50 p-6">
+      <h2 class="font-serif text-3xl text-forest-900">{page.clubTitle}</h2>
+      <p class="mt-3 leading-relaxed text-muted">{page.clubText}</p>
+      <p class="mt-5 text-sm font-semibold uppercase tracking-[0.14em] text-ochre-700">{page.secretaryRole}</p>
+      <p class="mt-1 font-semibold text-forest-900">{club.secretary}</p>
+      <p class="mt-1">
+        <a class={textLink} href={mailto}>{club.email}</a>
+      </p>
+      <p class="mt-2 text-sm text-muted">{page.subject}</p>
+    </article>
+  </div>
+
+  <section id="maksut" class="scroll-mt-24 mt-16">
+    <h2 class="font-serif text-4xl text-forest-900">{page.feesTitle}</h2>
+    <p class="mt-3 max-w-3xl text-muted">{page.feesYear.replace('{year}', String(club.feeYear))}</p>
+    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        club.fees.map((fee) => (
+          <PriceCard
+            title={page.feeNames[fee.key]}
+            price={euro(fee.total)}
+            unit={`${page.feeUnit}. ${page.feeSplit.replace('{srl}', euro(fee.srl)).replace('{club}', euro(fee.club))}`}
+          />
+        ))
+      }
+    </div>
+    <div class="mt-6 max-w-3xl space-y-3 leading-relaxed text-muted">
+      <p>{page.feesNote}</p>
+      <p>{page.familyNote}</p>
+      <p>
+        {page.eInvoice}{' '}
+        <a class={textLink} href={club.links.fees} target="_blank" rel="noopener noreferrer">
+          {page.feesCta}
+          <span class="sr-only"> ({dict.actions.newTab})</span>
+        </a>
+      </p>
+    </div>
+
+    <h3 class="mt-12 font-serif text-3xl text-forest-900">{page.joinTitle}</h3>
+    <p class="mt-3 max-w-3xl leading-relaxed text-muted">{page.joinText}</p>
+    <a class:list={['mt-6', button]} href={club.links.join} target="_blank" rel="noopener noreferrer">
+      {page.joinCta}
+      <span class="sr-only"> ({dict.actions.newTab})</span>
+    </a>
+  </section>
+
+  <section id="jasenhuone" class="scroll-mt-24 mt-16 max-w-3xl">
+    <h2 class="font-serif text-4xl text-forest-900">{page.roomTitle}</h2>
+    <div class="mt-4 space-y-3 leading-relaxed text-muted">
+      {page.room.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <a class:list={['mt-6', button]} href={club.links.memberRoom} target="_blank" rel="noopener noreferrer">
+      {page.roomCta}
+      <span class="sr-only"> ({dict.actions.newTab})</span>
+    </a>
+
+    <h3 class="mt-12 font-serif text-3xl text-forest-900">{page.benefitsTitle}</h3>
+    <div class="mt-4 space-y-3 leading-relaxed text-muted">
+      {page.benefits.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <a class:list={['mt-6', button]} href={club.links.benefits} target="_blank" rel="noopener noreferrer">
+      {page.benefitsCta}
+      <span class="sr-only"> ({dict.actions.newTab})</span>
+    </a>
+  </section>
+
+  <section id="luvat" class="scroll-mt-24 mt-16 max-w-3xl">
+    <h2 class="font-serif text-4xl text-forest-900">{page.licenceTitle}</h2>
+    <div class="mt-4 space-y-3 leading-relaxed text-muted">
+      {page.licence.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+      <a class={button} href={club.links.licenceApply} target="_blank" rel="noopener noreferrer">
+        {page.licenceCta}
+        <span class="sr-only"> ({dict.actions.newTab})</span>
+      </a>
+      <a class={button} href={club.links.rules} target="_blank" rel="noopener noreferrer">
+        {page.rulesCta}
+        <span class="sr-only"> ({dict.actions.newTab})</span>
+      </a>
+    </div>
+
+    <h3 class="mt-12 font-serif text-3xl text-forest-900">{page.grantTitle}</h3>
+    <p class="mt-3 leading-relaxed text-muted">{page.grantIntro.replace('{year}', String(club.grantYear))}</p>
+    <ul class="mt-4 space-y-3 leading-relaxed text-muted">
+      {
+        page.grant.map((item) => (
+          <li class="flex gap-3">
+            <span class="mt-2 h-2 w-2 shrink-0 bg-ochre-400" aria-hidden="true" />
+            {item}
+          </li>
+        ))
+      }
+    </ul>
+    <a class:list={['mt-6', button]} href={club.links.grants} target="_blank" rel="noopener noreferrer">
+      {page.grantCta}
+      <span class="sr-only"> ({dict.actions.newTab})</span>
+    </a>
+  </section>
+
+  <section id="katos" class="scroll-mt-24 mt-16">
+    <h2 class="font-serif text-4xl text-forest-900">{page.shelterTitle}</h2>
+    <p class="mt-3 max-w-3xl leading-relaxed text-muted">{page.shelterText}</p>
+    <p class="mt-3 font-semibold text-forest-900">{page.shelterSize.replace('{size}', shelterSize)}</p>
+    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+      <PriceCard title={page.shelterMember} price={euro(club.shelter.member)} unit={page.shelterUnit} />
+      <PriceCard title={page.shelterOther} price={euro(club.shelter.other)} unit={page.shelterUnit} />
+    </div>
+    <a class:list={['mt-6', button]} href={club.links.shelter} target="_blank" rel="noopener noreferrer">
+      {page.shelterCta}
+      <span class="sr-only"> ({dict.actions.newTab})</span>
+    </a>
+  </section>
+
+  <section id="maastot" class="scroll-mt-24 mt-16 max-w-3xl">
+    <h2 class="font-serif text-4xl text-forest-900">{page.trailsTitle}</h2>
+    <div class="mt-4 space-y-3 leading-relaxed text-muted">
+      {page.trails.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+      <a class={button} href={club.links.trailsAssociation} target="_blank" rel="noopener noreferrer">
+        {page.trailsCta}
+        <span class="sr-only"> ({dict.actions.newTab})</span>
+      </a>
+      <a class={button} href={club.links.trails} target="_blank" rel="noopener noreferrer">
+        {page.trailsYardCta}
+        <span class="sr-only"> ({dict.actions.newTab})</span>
+      </a>
+    </div>
+
+    <h3 class="mt-12 font-serif text-3xl text-forest-900">{page.pixemTitle}</h3>
+    <p class="mt-3 leading-relaxed text-muted">{page.pixemText}</p>
+    <a class:list={['mt-6', button]} href={club.links.pixem} target="_blank" rel="noopener noreferrer">
+      {page.pixemCta}
+      <span class="sr-only"> ({dict.actions.newTab})</span>
+    </a>
+  </section>
+
+  <section id="turvallisuus" class="scroll-mt-24 mt-16 max-w-3xl">
+    <h2 class="font-serif text-4xl text-forest-900">{page.safetyTitle}</h2>
+    <p class="mt-3 leading-relaxed text-muted">{page.safetyText}</p>
+    <ul class="mt-5 space-y-2">
+      <li>
+        <span class="text-sm text-muted">{page.safetyPrimary}</span><br />
+        <span class="font-semibold text-forest-900">{club.harassmentContact}</span>
+      </li>
+      <li>
+        <span class="text-sm text-muted">{page.safetyDeputy}</span><br />
+        <span class="font-semibold text-forest-900">{site.manager}</span>
+      </li>
+    </ul>
+    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+      <a class={button} href={club.links.saferSpace} target="_blank" rel="noopener noreferrer">
+        {page.safetyCta}
+        <span class="sr-only"> ({dict.actions.newTab})</span>
+      </a>
+      <a class={button} href={club.links.safety} target="_blank" rel="noopener noreferrer">
+        {page.safetyDocCta}
+        <span class="sr-only"> ({dict.actions.newTab})</span>
+      </a>
+    </div>
+
+    <h3 class="mt-12 font-serif text-3xl text-forest-900">{page.feedbackTitle}</h3>
+    <p class="mt-3 leading-relaxed text-muted">{page.feedbackText}</p>
+    <a class:list={['mt-6', button]} href={club.links.feedback} target="_blank" rel="noopener noreferrer">
+      {page.feedbackCta}
+      <span class="sr-only"> ({dict.actions.newTab})</span>
+    </a>
+
+    <h3 class="mt-12 font-serif text-3xl text-forest-900">{page.groupTitle}</h3>
+    <p class="mt-3 leading-relaxed text-muted">{page.groupText}</p>
+    <a class:list={['mt-6', button]} href={club.links.facebook} target="_blank" rel="noopener noreferrer">
+      {page.groupCta}
+      <span class="sr-only"> ({dict.actions.newTab})</span>
+    </a>
+  </section>
+</div>

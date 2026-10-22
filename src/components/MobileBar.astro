@@ -1,0 +1,22 @@
+---
+import { site } from '../config/site';
+import type { Dict } from '../i18n';
+
+interface Props {
+  dict: Dict;
+}
+
+const { dict } = Astro.props;
+---
+
+<div class="fixed inset-x-0 bottom-0 z-40 flex border-t border-forest-900/15 bg-cream-50 md:hidden">
+  <a class="flex-1 py-3 text-center text-sm font-semibold text-forest-900" href={`tel:${site.phones.manager.tel}`}>
+    {dict.actions.call}
+  </a>
+  <a
+    class="flex-1 border-l border-forest-900/15 py-3 text-center text-sm font-semibold text-forest-900"
+    href={`mailto:${site.email}`}
+  >
+    {dict.actions.email}
+  </a>
+</div>

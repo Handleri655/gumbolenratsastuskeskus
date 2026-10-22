@@ -1,0 +1,27 @@
+---
+import ContactForm from '../components/ContactForm.astro';
+import PageHero from '../components/PageHero.astro';
+import type { Dict } from '../i18n';
+import { pathFor, type Lang } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+}
+
+const { lang, dict } = Astro.props;
+---
+
+<PageHero eyebrow={dict.stall.eyebrow} title={dict.stall.title} lede={dict.stall.lede} />
+<div class="mx-auto grid max-w-6xl gap-12 px-5 py-16 lg:grid-cols-[0.7fr_1.3fr] md:py-24">
+  <aside>
+    <h2 class="font-serif text-3xl text-forest-900">{dict.stall.sideTitle}</h2>
+    <p class="mt-4 leading-relaxed text-muted">{dict.stall.side}</p>
+    <p class="mt-6">
+      <a class="font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4" href={pathFor(lang, 'palvelut')}>
+        {dict.nav.services}
+      </a>
+    </p>
+  </aside>
+  <ContactForm lang={lang} dict={dict} variant="stall" action={pathFor(lang, 'kiitos')} />
+</div>

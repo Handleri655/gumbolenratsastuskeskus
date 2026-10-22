@@ -1,0 +1,92 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { site } from '../config/site';
+import { getDict } from '../i18n';
+import { pathFor, type Lang, type PageId } from '../lib/routes';
+import ContactPage from './ContactPage.astro';
+import HistoryPage from './HistoryPage.astro';
+import MembersPage from './MembersPage.astro';
+import HomePage from './HomePage.astro';
+import NewsArticle from './NewsArticle.astro';
+import NewsListPage from './NewsListPage.astro';
+import PrivacyPage from './PrivacyPage.astro';
+import RentalPage from './RentalPage.astro';
+import ServicesPage from './ServicesPage.astro';
+import StablePage from './StablePage.astro';
+import StallPage from './StallPage.astro';
+import TeamPage from './TeamPage.astro';
+import ThanksPage from './ThanksPage.astro';
+import TrainingPage from './TrainingPage.astro';
+
+interface PageProps {
+  kind: 'page';
+  lang: Lang;
+  page: PageId;
+}
+
+interface NewsProps {
+  kind: 'news';
+  lang: Lang;
+  id: string;
+}
+
+type Props = PageProps | NewsProps;
+
+const props = Astro.props;
+const dict = getDict(props.lang);
+
+let title = site.name;
+let description = dict.pages.home.description;
+let current: PageId | 'uutinen' = 'home';
+let alternates: Record<Lang, string> = {
+  fi: pathFor('fi', 'home'),
+  sv: pathFor('sv', 'home'),
+  en: pathFor('en', 'home'),
+};
+let noindex = false;
+
+if (props.kind === 'page') {
+  current = props.page;
+  const meta = dict.pages[props.page];
+  title = props.page === 'home' ? meta.title : `${meta.title} · ${site.name}`;
+  description = meta.description;
+  noindex = props.page === 'kiitos';
+  alternates = {
+    fi: pathFor('fi', props.page),
+    sv: pathFor('sv', props.page),
+    en: pathFor('en', props.page),
+  };
+} else {
+  current = 'uutinen';
+  const all = await getCollection('news');
+  const entry = all.find((item) => item.id === props.id);
+  if (!entry) throw new Error(`News entry missing: ${props.id}`);
+  title = `${entry.data.title} · ${site.name}`;
+  description = entry.data.description;
+  const group = all.filter((item) => item.data.translationKey === entry.data.translationKey);
+  const byLang = Object.fromEntries(group.map((item) => [item.data.lang, pathFor(item.data.lang, 'ajankohtaista', item.data.slug)]));
+  alternates = {
+    fi: byLang.fi ?? pathFor('fi', 'ajankohtaista'),
+    sv: byLang.sv ?? pathFor('sv', 'ajankohtaista'),
+    en: byLang.en ?? pathFor('en', 'ajankohtaista'),
+  };
+}
+---
+
+<Base lang={props.lang} title={title} description={description} current={current} alternates={alternates} noindex={noindex}>
+  {props.kind === 'page' && props.page === 'home' && <HomePage lang={props.lang} dict={dict} />}
+  {props.kind === 'page' && props.page === 'talli' && <StablePage lang={props.lang} dict={dict} />}
+  {props.kind === 'page' && props.page === 'palvelut' && <ServicesPage lang={props.lang} dict={dict} />}
+  {props.kind === 'page' && props.page === 'vuokraus' && <RentalPage lang={props.lang} dict={dict} />}
+  {props.kind === 'page' && props.page === 'valmennus' && <TrainingPage lang={props.lang} dict={dict} />}
+  {props.kind === 'page' && props.page === 'jasenille' && <MembersPage lang={props.lang} dict={dict} />}
+  {props.kind === 'page' && props.page === 'historia' && <HistoryPage dict={dict} />}
+  {props.kind === 'page' && props.page === 'henkilokunta' && <TeamPage dict={dict} />}
+  {props.kind === 'page' && props.page === 'ajankohtaista' && <NewsListPage lang={props.lang} dict={dict} />}
+  {props.kind === 'page' && props.page === 'yhteystiedot' && <ContactPage dict={dict} />}
+  {props.kind === 'page' && props.page === 'tallipaikka' && <StallPage lang={props.lang} dict={dict} />}
+  {props.kind === 'page' && props.page === 'tietosuoja' && <PrivacyPage dict={dict} />}
+  {props.kind === 'page' && props.page === 'kiitos' && <ThanksPage lang={props.lang} dict={dict} />}
+  {props.kind === 'news' && <NewsArticle id={props.id} lang={props.lang} dict={dict} />}
+</Base>

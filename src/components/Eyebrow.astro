@@ -1,0 +1,18 @@
+---
+interface Props {
+  text: string;
+  light?: boolean;
+}
+
+const { text, light = false } = Astro.props;
+---
+
+<p
+  class:list={[
+    'flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em]',
+    light ? 'text-cream-50' : 'text-forest-900',
+  ]}
+>
+  <span class:list={['inline-block h-px w-8', light ? 'bg-ochre-400' : 'bg-ochre-400']} aria-hidden="true"></span>
+  {text}
+</p>

@@ -1,0 +1,25 @@
+---
+interface Item {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+---
+
+<section>
+  <ul class="grid grid-cols-2 divide-x divide-y divide-forest-900/15 border-y border-forest-900/15 md:grid-cols-5 md:divide-y-0">
+    {
+      items.map((item) => (
+        <li class="px-4 py-8 text-center">
+          <p class="font-serif text-4xl text-forest-900 md:text-5xl">{item.value}</p>
+          <p class="mt-2 text-sm text-muted">{item.label}</p>
+        </li>
+      ))
+    }
+  </ul>
+</section>

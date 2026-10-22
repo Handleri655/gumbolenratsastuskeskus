@@ -1,0 +1,73 @@
+---
+import { Image } from 'astro:assets';
+import { site } from '../config/site';
+import PageHero from '../components/PageHero.astro';
+import type { Dict } from '../i18n';
+import { images } from '../lib/images';
+import { pathFor, type Lang } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+}
+
+const { lang, dict } = Astro.props;
+const page = dict.stable;
+---
+
+<PageHero eyebrow={page.eyebrow} title={page.title} lede={page.lede} />
+
+<div class="mx-auto grid max-w-6xl gap-12 px-5 py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
+  <div class="space-y-4 text-lg leading-relaxed text-muted">
+    {page.intro.map((paragraph) => <p>{paragraph}</p>)}
+    <p>
+      <a class="font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4" href={pathFor(lang, 'palvelut')}>
+        {dict.nav.services}
+      </a>
+    </p>
+  </div>
+  <figure>
+    <Image src={images.aisle} alt={page.stallsImageAlt} widths={[640, 1000]} sizes="(min-width: 768px) 40vw, 100vw" class="w-full object-cover" />
+    <figcaption class="mt-3 text-sm text-muted">{page.stallsTitle}: {site.stalls}</figcaption>
+  </figure>
+</div>
+
+<section class="border-y border-forest-900/10 bg-cream-200/40">
+  <div class="mx-auto max-w-6xl px-5 py-16 md:py-20">
+    <h2 class="font-serif text-4xl text-forest-900">{page.paddockTitle}</h2>
+    <div class="mt-6 max-w-3xl space-y-4 leading-relaxed text-muted">
+      {page.paddock.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-2 md:py-24">
+  <Image src={images.indoor} alt={page.arenaImageAlt} widths={[700, 1200]} sizes="(min-width: 768px) 50vw, 100vw" class="w-full object-cover" />
+  <div>
+    <h2 class="font-serif text-4xl text-forest-900">{page.arenaTitle}</h2>
+    <dl class="mt-6 grid grid-cols-2 gap-4">
+      <div class="border-t-2 border-ochre-400 pt-3">
+        <dt class="text-sm text-muted">{page.outdoorLabel}</dt>
+        <dd class="font-serif text-3xl text-forest-900">{site.outdoor.width} × {site.outdoor.length} m</dd>
+      </div>
+      <div class="border-t-2 border-ochre-400 pt-3">
+        <dt class="text-sm text-muted">{page.indoorLabel}</dt>
+        <dd class="font-serif text-3xl text-forest-900">{site.arena.width} × {site.arena.length} m</dd>
+      </div>
+    </dl>
+    <p class="mt-6 leading-relaxed text-muted">{page.arenaDetail}</p>
+    <a class="mt-6 inline-flex text-sm font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4" href={site.pdfArena}>
+      {dict.actions.downloadPdf}
+    </a>
+  </div>
+</section>
+
+<section class="bg-forest-900 text-cream-50">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-2">
+    <div>
+      <h2 class="font-serif text-4xl">{page.landTitle}</h2>
+      <p class="mt-5 leading-relaxed text-cream-100">{page.land}</p>
+    </div>
+    <Image src={images.meadow} alt={page.landImageAlt} widths={[700, 1200]} sizes="(min-width: 768px) 50vw, 100vw" class="w-full object-cover" />
+  </div>
+</section>

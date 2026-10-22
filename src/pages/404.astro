@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import { getDict } from '../i18n';
+import { pathFor, type Lang } from '../lib/routes';
+
+const path = Astro.url.pathname;
+const lang: Lang = path.startsWith('/sv') ? 'sv' : path.startsWith('/en') ? 'en' : 'fi';
+const dict = getDict(lang);
+const alternates = {
+  fi: pathFor('fi', 'home'),
+  sv: pathFor('sv', 'home'),
+  en: pathFor('en', 'home'),
+};
+---
+
+<Base
+  lang={lang}
+  title={`${dict.notFound.title} · Gumbölen Ratsastuskeskus`}
+  description={dict.notFound.text}
+  current="home"
+  alternates={alternates}
+  noindex
+>
+  <section class="mx-auto max-w-3xl px-5 py-24">
+    <h1 class="font-serif text-5xl text-forest-900">{dict.notFound.title}</h1>
+    <p class="mt-5 text-lg text-muted">{dict.notFound.text}</p>
+    <a href={pathFor(lang, 'home')} class="mt-8 inline-flex bg-forest-900 px-5 py-3 text-sm font-semibold text-cream-50">
+      {dict.actions.home}
+    </a>
+  </section>
+</Base>

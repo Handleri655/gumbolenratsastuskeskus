@@ -1,0 +1,41 @@
+---
+import { site } from '../config/site';
+import type { Dict } from '../i18n';
+
+interface Props {
+  dict: Dict;
+}
+
+const { dict } = Astro.props;
+const { lat, lng } = site.geo;
+const padLng = 0.012;
+const padLat = 0.008;
+const bbox = `${lng - padLng},${lat - padLat},${lng + padLng},${lat + padLat}`;
+const embed = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lng}`;
+const navigate = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${site.address.street}, ${site.address.postalCode} ${site.address.city}`)}`;
+const osm = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}`;
+---
+
+<div class="overflow-hidden border border-forest-900/15 bg-cream-200">
+  <iframe
+    title={dict.map.frameTitle}
+    src={embed}
+    class="h-80 w-full border-0"
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+  ></iframe>
+  <div class="flex flex-col gap-3 p-4 sm:flex-row">
+    <a
+      href={navigate}
+      class="inline-flex items-center justify-center bg-forest-900 px-5 py-3 text-sm font-semibold text-cream-50 hover:bg-forest-800"
+    >
+      {dict.actions.navigate}
+    </a>
+    <a
+      href={osm}
+      class="inline-flex items-center justify-center border border-forest-900 px-5 py-3 text-sm font-semibold text-forest-900 hover:bg-forest-900 hover:text-cream-50"
+    >
+      OpenStreetMap
+    </a>
+  </div>
+</div>

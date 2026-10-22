@@ -1,0 +1,20 @@
+{
+  "redirects": [
+    { "source": "/talli-ja-puitteet", "destination": "/talli", "permanent": true },
+    { "source": "/talli-ja-puitteet/", "destination": "/talli", "permanent": true },
+    { "source": "/talli-ja-puitteet/palvelut", "destination": "/palvelut", "permanent": true },
+    { "source": "/talli-ja-puitteet/palvelut/", "destination": "/palvelut", "permanent": true },
+    { "source": "/talli-ja-puitteet/kentan-ja-maneesin-vuokraus", "destination": "/vuokraus", "permanent": true },
+    { "source": "/talli-ja-puitteet/kentan-ja-maneesin-vuokraus/", "destination": "/vuokraus", "permanent": true },
+    { "source": "/talli-ja-puitteet/henkilokunta", "destination": "/henkilokunta", "permanent": true },
+    { "source": "/talli-ja-puitteet/henkilokunta/", "destination": "/henkilokunta", "permanent": true },
+    { "source": "/gumbolen-ratsastuskeskus-oy/historiaa", "destination": "/historia", "permanent": true },
+    { "source": "/gumbolen-ratsastuskeskus-oy/historiaa/", "destination": "/historia", "permanent": true },
+    { "source": "/gumbolen-ratsastuskeskus-oy/osa-tyylikasta-empirekartanomiljoota", "destination": "/historia#kartanomiljoo", "permanent": true },
+    { "source": "/gumbolen-ratsastuskeskus-oy/osa-tyylikasta-empirekartanomiljoota/", "destination": "/historia#kartanomiljoo", "permanent": true },
+    { "source": "/yhteystiedot/sijainti", "destination": "/yhteystiedot#sijainti", "permanent": true },
+    { "source": "/yhteystiedot/sijainti/", "destination": "/yhteystiedot#sijainti", "permanent": true },
+    { "source": "/yhteystiedot/laskutustiedot", "destination": "/yhteystiedot#laskutus", "permanent": true },
+    { "source": "/yhteystiedot/laskutustiedot/", "destination": "/yhteystiedot#laskutus", "permanent": true }
+  ]
+}

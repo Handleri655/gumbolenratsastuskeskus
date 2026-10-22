@@ -1,0 +1,156 @@
+---
+import { site } from '../config/site';
+import type { Dict } from '../i18n';
+import { languages, navPages, pathFor, type Lang, type PageId } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+  current: PageId | 'uutinen';
+  alternates: Record<Lang, string>;
+}
+
+const { lang, dict, current, alternates } = Astro.props;
+const home = pathFor(lang, 'home');
+const labels: Record<(typeof navPages)[number], string> = {
+  talli: dict.nav.stable,
+  palvelut: dict.nav.services,
+  vuokraus: dict.nav.rental,
+  valmennus: dict.nav.training,
+  jasenille: dict.nav.members,
+  historia: dict.nav.history,
+  ajankohtaista: dict.nav.news,
+  yhteystiedot: dict.nav.contact,
+};
+---
+
+<header class="sticky top-0 z-50 border-b border-forest-900/10 bg-cream-100/95 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
+    <a href={home} class="group block leading-none">
+      <span class="block font-serif text-2xl text-forest-900 group-hover:text-forest-800">Gumböle</span>
+      <span class="mt-1 block text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted">Ratsastuskeskus</span>
+    </a>
+
+    <nav class="hidden items-center gap-3 xl:flex" aria-label={dict.nav.main}>
+      {
+        navPages.map((page) => (
+          <a
+            href={pathFor(lang, page)}
+            aria-current={current === page ? 'page' : undefined}
+            class:list={[
+              'text-sm text-ink hover:text-forest-900',
+              current === page && 'font-semibold text-forest-900 underline decoration-ochre-400 decoration-2 underline-offset-8',
+            ]}
+          >
+            {labels[page]}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <ul class="flex items-center gap-1 text-xs font-semibold tracking-wide" aria-label={dict.a11y.lang}>
+        {
+          languages.map((code) => (
+            <li>
+              <a
+                href={alternates[code]}
+                hreflang={code}
+                lang={code}
+                aria-current={code === lang ? 'true' : undefined}
+                class:list={[
+                  'px-1.5 py-1 uppercase',
+                  code === lang ? 'text-forest-900 underline decoration-ochre-400 decoration-2 underline-offset-4' : 'text-muted hover:text-forest-900',
+                ]}
+              >
+                {code}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a
+        href={pathFor(lang, 'tallipaikka')}
+        class="hidden bg-forest-900 px-4 py-2.5 text-sm font-semibold text-cream-50 hover:bg-forest-800 sm:inline-flex"
+      >
+        {dict.nav.stall}
+      </a>
+      <button
+        id="menu-button"
+        type="button"
+        class="inline-flex h-11 w-11 items-center justify-center border border-forest-900/20 xl:hidden"
+        aria-expanded="false"
+        aria-controls="site-menu"
+      >
+        <span class="sr-only">{dict.nav.menu}</span>
+        <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true" fill="none">
+          <path d="M0 1h20M0 7h20M0 13h20" stroke="currentColor" stroke-width="1.5"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav id="site-menu" class="hidden border-t border-forest-900/10 bg-cream-100 xl:hidden" aria-label={dict.nav.main}>
+    <ul class="mx-auto flex max-w-6xl flex-col px-5 py-3">
+      {
+        navPages.map((page) => (
+          <li>
+            <a
+              href={pathFor(lang, page)}
+              aria-current={current === page ? 'page' : undefined}
+              class="block py-3 text-lg text-forest-900"
+            >
+              {labels[page]}
+            </a>
+          </li>
+        ))
+      }
+      <li class="py-3">
+        <a href={pathFor(lang, 'tallipaikka')} class="inline-flex bg-forest-900 px-4 py-3 text-sm font-semibold text-cream-50">
+          {dict.nav.stall}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<script>
+  const button = document.getElementById('menu-button');
+  const menu = document.getElementById('site-menu');
+
+  function setOpen(open: boolean) {
+    if (!button || !menu) return;
+    menu.classList.toggle('hidden', !open);
+    button.setAttribute('aria-expanded', String(open));
+  }
+
+  button?.addEventListener('click', () => {
+    const open = button.getAttribute('aria-expanded') !== 'true';
+    setOpen(open);
+    if (open) {
+      const first = menu?.querySelector('a');
+      if (first instanceof HTMLElement) first.focus();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setOpen(false);
+      button?.focus();
+    }
+  });
+</script>

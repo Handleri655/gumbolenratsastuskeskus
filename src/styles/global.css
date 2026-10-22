@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", "Palatino Linotype", Palatino, serif;
+  --font-sans: "Source Sans 3", "Segoe UI", sans-serif;
+  --color-forest-950: #101c16;
+  --color-forest-900: #1f3a2e;
+  --color-forest-800: #2c4d3c;
+  --color-cream-50: #fbf8f2;
+  --color-cream-100: #f6f1e7;
+  --color-cream-200: #ebe3d4;
+  --color-ochre-400: #c4a35a;
+  --color-ochre-700: #7a5e28;
+  --color-ink: #24231f;
+  --color-muted: #4e4a43;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-cream-100);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #c4a35a;
+  color: #1f3a2e;
+}
+
+:focus-visible {
+  outline: 2px solid #7a5e28;
+  outline-offset: 3px;
+}
+
+.prose p + p {
+  margin-top: 1rem;
+}
+
+.prose a {
+  color: var(--color-forest-900);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose ul {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.prose li + li {
+  margin-top: 0.35rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 70;
+  transform: translateY(-150%);
+  background: var(--color-cream-50);
+  color: var(--color-forest-900);
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

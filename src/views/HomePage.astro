@@ -1,0 +1,172 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import { site } from '../config/site';
+import Eyebrow from '../components/Eyebrow.astro';
+import FeatureCard from '../components/FeatureCard.astro';
+import Gallery from '../components/Gallery.astro';
+import Hero from '../components/Hero.astro';
+import Map from '../components/Map.astro';
+import NewsCard from '../components/NewsCard.astro';
+import StatsBar from '../components/StatsBar.astro';
+import type { Dict } from '../i18n';
+import { images } from '../lib/images';
+import { formatDate, formatEuro, pathFor, type Lang } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  dict: Dict;
+}
+
+const { lang, dict } = Astro.props;
+const home = dict.home;
+const posts = (await getCollection('news', ({ data }) => data.lang === lang))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const stats = [
+  { value: String(site.stalls), label: home.statStalls },
+  { value: String(site.paddocks), label: home.statPaddocks },
+  { value: `${site.arena.width} × ${site.arena.length}`, label: home.statArena },
+  { value: `${site.outdoor.width} × ${site.outdoor.length}`, label: home.statOutdoor },
+  { value: String(site.built), label: home.statBuilt },
+];
+
+const gallerySrc = [
+  images.aerial,
+  images.outdoor,
+  images.indoorRed,
+  images.indoor,
+  images.aisle,
+  images.stall,
+  images.meadow,
+  images.tack,
+];
+const gallery = gallerySrc.map((src, index) => ({ src, alt: home.gallery[index] ?? '' }));
+---
+
+<Hero
+  image={images.hero}
+  alt={home.heroAlt}
+  eyebrow={home.eyebrow}
+  title={home.title}
+  subtitle={home.subtitle}
+  primaryHref={pathFor(lang, 'tallipaikka')}
+  primaryLabel={dict.nav.stall}
+  secondaryHref={pathFor(lang, 'talli')}
+  secondaryLabel={dict.actions.explore}
+/>
+<StatsBar items={stats} />
+
+<section class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+  <Eyebrow text={home.whyEyebrow} />
+  <h2 class="mt-4 font-serif text-4xl text-forest-900 md:text-5xl">{home.whyTitle}</h2>
+  <div class="mt-10 grid gap-5 md:grid-cols-2">
+    {
+      home.why.map((item, index) => (
+        <FeatureCard
+          index={String(index + 1).padStart(2, '0')}
+          title={item.title}
+          text={item.text}
+          href={index === 3 ? pathFor(lang, 'jasenille') : undefined}
+          linkLabel={dict.nav.members}
+        />
+      ))
+    }
+  </div>
+</section>
+
+<section class="bg-forest-900 text-cream-50">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-2 md:py-24">
+    <Image src={images.aerial} alt={home.historyImageAlt} widths={[640, 960, 1400]} sizes="(min-width: 768px) 50vw, 100vw" class="h-full max-h-[32rem] w-full object-cover" />
+    <div>
+      <Eyebrow text={home.historyEyebrow} light />
+      <h2 class="mt-4 font-serif text-4xl leading-tight md:text-5xl">{home.historyTitle}</h2>
+      <p class="mt-5 leading-relaxed text-cream-100">{home.historyText}</p>
+      <a href={pathFor(lang, 'historia')} class="mt-8 inline-flex border border-cream-50 px-5 py-3 text-sm font-semibold hover:bg-cream-50 hover:text-forest-900">
+        {home.historyLink}
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+  <Eyebrow text={home.galleryEyebrow} />
+  <h2 class="mt-4 font-serif text-4xl text-forest-900 md:text-5xl">{home.galleryTitle}</h2>
+  <div class="mt-10">
+    <Gallery
+      items={gallery}
+      label={dict.a11y.gallery}
+      closeLabel={dict.a11y.close}
+      prevLabel={dict.a11y.prev}
+      nextLabel={dict.a11y.next}
+    />
+  </div>
+</section>
+
+{
+  posts.length > 0 && (
+    <section class="border-t border-forest-900/10 bg-cream-200/50">
+      <div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <Eyebrow text={home.newsEyebrow} />
+            <h2 class="mt-4 font-serif text-4xl text-forest-900 md:text-5xl">{home.newsTitle}</h2>
+          </div>
+          <a href={pathFor(lang, 'ajankohtaista')} class="text-sm font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4">
+            {dict.actions.allNews}
+          </a>
+        </div>
+        <div class="mt-10 grid gap-5 md:grid-cols-3">
+          {posts.map((post) => (
+            <NewsCard
+              href={pathFor(lang, 'ajankohtaista', post.data.slug)}
+              title={post.data.title}
+              description={post.data.description}
+              date={formatDate(post.data.date, lang)}
+              tags={post.data.tags.map((tag) => dict.tags[tag])}
+              readMore={dict.actions.readMore}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<section class="mx-auto grid max-w-6xl items-center gap-8 px-5 py-16 md:grid-cols-[1.2fr_0.8fr] md:py-24">
+  <div>
+    <Eyebrow text={home.rentalEyebrow} />
+    <h2 class="mt-4 font-serif text-4xl text-forest-900 md:text-5xl">{home.rentalTitle}</h2>
+    <p class="mt-5 max-w-xl leading-relaxed text-muted">{home.rentalText}</p>
+    <a href={pathFor(lang, 'vuokraus')} class="mt-8 inline-flex bg-forest-900 px-5 py-3 text-sm font-semibold text-cream-50 hover:bg-forest-800">
+      {home.rentalLink}
+    </a>
+  </div>
+  <p class="font-serif text-5xl leading-tight text-forest-900">
+    {formatEuro(site.prices.season, lang)} <span class="block text-2xl text-muted">{dict.rental.seasonUnit}</span>
+  </p>
+</section>
+
+<section class="border-t border-forest-900/10">
+  <div class="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-2 md:py-24">
+    <div>
+      <Eyebrow text={home.contactEyebrow} />
+      <h2 class="mt-4 font-serif text-4xl text-forest-900 md:text-5xl">{home.contactTitle}</h2>
+      <p class="mt-5 leading-relaxed text-muted">{home.contactText}</p>
+      <address class="mt-6 text-lg not-italic text-forest-900">
+        {site.address.street}<br />
+        {site.address.postalCode} {site.address.city}
+      </address>
+      <p class="mt-4">
+        <a class="font-semibold text-forest-900 underline decoration-ochre-400 underline-offset-4" href={`tel:${site.phones.manager.tel}`}>
+          {site.phones.manager.display}
+        </a>
+      </p>
+      <a href={pathFor(lang, 'yhteystiedot')} class="mt-8 inline-flex border border-forest-900 px-5 py-3 text-sm font-semibold text-forest-900 hover:bg-forest-900 hover:text-cream-50">
+        {dict.nav.contact}
+      </a>
+    </div>
+    <Map dict={dict} />
+  </div>
+</section>

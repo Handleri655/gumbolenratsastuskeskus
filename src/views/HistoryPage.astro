@@ -1,0 +1,41 @@
+---
+import { Image } from 'astro:assets';
+import PageHero from '../components/PageHero.astro';
+import Timeline from '../components/Timeline.astro';
+import type { Dict } from '../i18n';
+import { images } from '../lib/images';
+
+interface Props {
+  dict: Dict;
+}
+
+const { dict } = Astro.props;
+const page = dict.history;
+---
+
+<PageHero eyebrow={page.eyebrow} title={page.title} lede={page.lede} />
+
+<div class="mx-auto max-w-3xl px-5 py-16 md:py-24">
+  <Timeline items={page.timeline} />
+</div>
+
+<section class="border-y border-forest-900/10 bg-cream-200/50">
+  <div class="mx-auto max-w-3xl px-5 py-16">
+    <h2 class="font-serif text-4xl text-forest-900">{page.sportTitle}</h2>
+    <p class="mt-5 text-lg leading-relaxed text-muted">{page.sport}</p>
+  </div>
+</section>
+
+<section id={page.manorId} class="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-2 md:py-24">
+  <div class="bg-cream-50 p-4">
+    <Image src={images.horse} alt={page.manorImageAlt} widths={[500, 800]} sizes="(min-width: 768px) 40vw, 100vw" class="w-full" />
+  </div>
+  <div>
+    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-forest-900">{page.manorEyebrow}</p>
+    <h2 class="mt-3 font-serif text-4xl text-forest-900">{page.manorTitle}</h2>
+    <div class="mt-5 space-y-4 leading-relaxed text-muted">
+      {page.manor.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <p class="mt-8 text-sm text-muted">{page.sources}</p>
+  </div>
+</section>
